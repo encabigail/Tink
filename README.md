@@ -1,4 +1,4 @@
-﻿# **Tink – GitHub Contribution Workflow Guide**
+# **Tink – GitHub Contribution Workflow Guide**
 
 This guide explains how to contribute to the **Tink** project repository by forking, cloning, creating branches, and submitting pull requests.
 
