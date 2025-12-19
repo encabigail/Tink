@@ -39,16 +39,18 @@ header {
     justify-content: space-between;
     color: #fff;
     z-index: 10;
+    background: transparent;
 }
 
 nav a {
+    display:inline-block;
     margin: 0 15px;
     text-decoration: none;
     color: #fff;
     font-size: 15px;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     position: relative; 
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 /* Create the line but keep it at 0 width initially */
@@ -57,15 +59,15 @@ nav a::after {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 0; 
-    height: 2px;
+    width: 0;
+    height: 5px;
     background: #6fb6d9;
-    transition: width 0.01s ease;
+    transition: width 0.25s ease;
 }
 
 /* When the link is hovered, grow the pseudo-element line to 100% */
 nav a:hover::after {
-    width: 100%; 
+    width: 100%;
 }
 
 .header-right {
