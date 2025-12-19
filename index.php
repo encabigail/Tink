@@ -29,7 +29,9 @@
 
 <!-- ===== Header ===== -->
 <header>
-    <div class="logo">Tink</div>
+    <div class="logo">
+    <img src="assets/images/logo.png" alt="Tink" width="102" height="41.5">
+</div>
 
     <nav class="main-nav">
         <a href="bracelets.php" class="nav-link active">BRACELETS</a>
@@ -40,17 +42,21 @@
         <a href="designers.php" class="nav-link">DESIGNERS</a>
     </nav>
 
-    <div class="nav-icons">
-        <!-- Search -->
-        <div class="search-box">
-            <input type="text" placeholder="Search our store" />
+<div class="header-right">
+        <div class="search-bar">
+            <input type="text" placeholder="Search our store">
             <i class="fa-solid fa-magnifying-glass"></i>
         </div>
-
-        <!-- Cart & User -->
+<div class="icons">
+    <a href="products.php">
         <i class="fa-solid fa-bag-shopping"></i>
+    </a>
+
+    <a href="signup.php">
         <i class="fa-regular fa-user"></i>
-    </div>
+    </a>
+</div>
+</div>
 
     <script>
     const searchBox = document.querySelector('.search-box');
@@ -108,11 +114,18 @@
             <div class="material">Silver Sterling</div>
         </div>
 
+        <div class="product">
+            <img src="assets/images/necklace1.png" alt="Eternal Bloom Ring">
+            <h4>Ocean Pulse Necklace</h4>
+            <div class="price">MYR 33</div>
+            <div class="material">18K Gold plating</div>
+        </div>
+
     </div>
 </section>
 
 <!-- ===== Features ===== -->
-<section class="features" style="background-image: url('assets/images/wave.png');">
+<section class="features" style="background-image: url('assets/images/wave.jpg');">
     <div class="feature-box">
 
         <div class="feature">
@@ -161,10 +174,13 @@
 <section class="promo-section">
     <div class="promo-content">
         <h3>Custom Engraving Service</h3>
-        <em>Available on pendants, ring bands, and bracelets</em>
+        <em>Available on pendants, ring bands, and
+            bracelet plates—add names, initials, dates,
+            or short messages for a personal touch</em>
         <p>
-            Add names, initials, dates, or short messages for a personal touch.
             Your jewelry should say something special.
+            With our engraving service, every piece becomes uniquely
+            yours — crafted with care to celebrate your story.
         </p>
         <button>Design Your Moment</button>
     </div>
