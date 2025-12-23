@@ -4,7 +4,7 @@ require_once '../config.php';
 
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['admin_id'])) {
-    header('Location: /admin/dashboard.php');
+    header('Location: login.php');
     exit;
 }
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_username'] = $admin['ADMIN_USERNAME'];
 
                 // Redirect to dashboard
-                header('Location: /admin/dashboard.php');
+                header('Location: dashboard.php');
                 exit;
             } else {
                 // ❌ LOGIN FAILED - Use generic message for security
