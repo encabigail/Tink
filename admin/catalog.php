@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $designer_id = intval($_POST['designer_id'] ?? 0);
             $is_engravable = isset($_POST['is_engravable']) ? 1 : 0;
 
-            // Parent ID Logic (Only for Charms)
+            // Parent ID Logic
             $existing_parent_id = null;
             if ($item_cat === 'Charms' && !empty($_POST['parent_id'])) {
                 $existing_parent_id = intval($_POST['parent_id']);
@@ -58,17 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $stocks = $_POST['var_stock'] ?? [];
             $ids = $_POST['var_id'] ?? [];
 
-            // 3. GROUPING LOGIC (Preserve ID on Edit)
+            // 3. GROUPING LOGIC
             if (empty($existing_parent_id) && !empty($ids[0])) {
                 $check_stmt = $pdo->prepare("SELECT PARENT_ID FROM ITEM WHERE ITEM_ID = ?");
                 $check_stmt->execute([intval($ids[0])]);
                 $db_parent = $check_stmt->fetchColumn();
-                if ($db_parent) {
-                    $existing_parent_id = $db_parent;
-                }
+                if ($db_parent) $existing_parent_id = $db_parent;
             }
 
-            // Generate New Group ID if needed
             $final_parent_id = $existing_parent_id;
             if (empty($final_parent_id) && count($names) > 1) {
                 $final_parent_id = rand(10000, 99999);
@@ -77,16 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $final_parent_id = null;
             }
 
-            // 4. GALLERY IMAGES
+            // 4. GALLERY IMAGES UPLOAD
             $final_gallery = [];
             if (!empty($_POST['existing_gallery_images'])) {
                 $final_gallery = json_decode($_POST['existing_gallery_images'], true) ?? [];
             }
 
-            $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/images/products/';
-            if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
-            }
+            $upload_dir = dirname(__DIR__) . '/images/products/';
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
             if (!empty($_FILES['base_item_images']['name'][0])) {
                 for ($i = 0; $i < count($_FILES['base_item_images']['name']); $i++) {
@@ -94,15 +89,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $ext = strtolower(pathinfo($_FILES['base_item_images']['name'][$i], PATHINFO_EXTENSION));
                         $filename = 'base_' . time() . '_' . $i . '.' . $ext;
                         if (move_uploaded_file($_FILES['base_item_images']['tmp_name'][$i], $upload_dir . $filename)) {
-                            $final_gallery[] = '/images/products/' . $filename;
+                            $final_gallery[] = 'images/products/' . $filename;
                         }
                     }
                 }
             }
             $gallery_json = !empty($final_gallery) ? json_encode(array_values($final_gallery)) : null;
 
+            // --- NEW: FALLBACK IMAGE LOGIC ---
+            // If we have gallery images, pick the first one as the default "Product Image"
+            $gallery_fallback_image = !empty($final_gallery) ? $final_gallery[0] : null;
+
             // 5. SAVE / UPDATE VARIANTS
-            $saved_ids = []; // Keep track of IDs we saved to detect deletions
+            $saved_ids = [];
 
             for ($i = 0; $i < count($names); $i++) {
                 $v_name = trim($names[$i]);
@@ -112,21 +111,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $v_id = !empty($ids[$i]) ? intval($ids[$i]) : null;
 
                 $image_path = null;
+                $has_uploaded_new_image = false;
+
+                // Check specific upload
                 if (!empty($_FILES['var_image']['name'][$i])) {
-                    if (!is_dir($upload_dir)) {
-                        mkdir($upload_dir, 0777, true);
-                    }
                     $ext = strtolower(pathinfo($_FILES['var_image']['name'][$i], PATHINFO_EXTENSION));
                     $filename = 'var_' . time() . '_' . $i . '.' . $ext;
                     if (move_uploaded_file($_FILES['var_image']['tmp_name'][$i], $upload_dir . $filename)) {
-                        $image_path = '/images/products/' . $filename;
+                        $image_path = 'images/products/' . $filename;
+                        $has_uploaded_new_image = true;
                     }
                 }
 
+                // --- KEY FIX: USE GALLERY IMAGE IF NO SPECIFIC IMAGE ---
+                // If user didn't upload a specific variant image, use the first gallery image
+                if (!$has_uploaded_new_image && $gallery_fallback_image) {
+                    $image_path = $gallery_fallback_image;
+                }
+
                 if ($v_id) {
+                    // UPDATE
                     $sql = "UPDATE ITEM SET DESIGNER_ID=?, ITEM_CATEGORY=?, ITEM_NAME=?, ITEM_DESCRIPTION=?, ITEM_MATERIAL=?, ITEM_PRICE=?, ITEM_STOCK=?, ITEM_TAGS=?, PARENT_ID=?, IS_ENGRAVABLE=?, GALLERY_IMAGES=?";
                     $params = [$designer_id, $item_cat, $v_name, $item_desc, $v_mat, $v_price, $v_stock, $item_tags, $final_parent_id, $is_engravable, $gallery_json];
 
+                    // Only update image column if we actually have an image path (from upload or fallback)
+                    // This ensures we populate it if it was missing, or update it if changed.
                     if ($image_path) {
                         $sql .= ", ITEM_IMAGE=?";
                         $params[] = $image_path;
@@ -137,25 +146,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $pdo->prepare($sql)->execute($params);
                     $saved_ids[] = $v_id;
                 } else {
+                    // INSERT
                     $stmt = $pdo->prepare("INSERT INTO ITEM (DESIGNER_ID, ITEM_CATEGORY, ITEM_NAME, ITEM_DESCRIPTION, ITEM_MATERIAL, ITEM_PRICE, ITEM_STOCK, ITEM_IMAGE, ITEM_TAGS, PARENT_ID, IS_ENGRAVABLE, GALLERY_IMAGES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute([$designer_id, $item_cat, $v_name, $item_desc, $v_mat, $v_price, $v_stock, $image_path, $item_tags, $final_parent_id, $is_engravable, $gallery_json]);
                     $saved_ids[] = $pdo->lastInsertId();
                 }
             }
 
-            // 6. PRUNE DELETED VARIANTS (New Fix)
-            // If we have a group (Parent ID), check for items in DB that were NOT in the submitted form
+            // 6. PRUNE DELETED VARIANTS
             if ($final_parent_id) {
                 $stmt = $pdo->prepare("SELECT ITEM_ID FROM ITEM WHERE PARENT_ID = ?");
                 $stmt->execute([$final_parent_id]);
                 $db_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-                // Find IDs in DB that are missing from the saved list
                 $ids_to_remove = array_diff($db_ids, $saved_ids);
-
                 if (!empty($ids_to_remove)) {
                     $in_remove = implode(',', array_fill(0, count($ids_to_remove), '?'));
-                    // Delete dependencies first
                     $pdo->prepare("DELETE FROM CARTITEM WHERE ITEM_ID IN ($in_remove)")->execute(array_values($ids_to_remove));
                     $pdo->prepare("DELETE FROM ITEM WHERE ITEM_ID IN ($in_remove)")->execute(array_values($ids_to_remove));
                 }
@@ -164,16 +169,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $success_msg = "Product(s) saved successfully!";
         }
 
-        // --- FIXED DELETE LOGIC ---
         if ($action === 'delete_product') {
             $target_id = intval($_POST['item_id']);
-
-            // 1. Check if this item is part of a group
             $stmt = $pdo->prepare("SELECT PARENT_ID FROM ITEM WHERE ITEM_ID = ?");
             $stmt->execute([$target_id]);
             $parent_id = $stmt->fetchColumn();
 
-            // 2. Identify ALL IDs to delete (The specific item + any siblings if it's a group)
             if ($parent_id) {
                 $stmt = $pdo->prepare("SELECT ITEM_ID FROM ITEM WHERE PARENT_ID = ?");
                 $stmt->execute([$parent_id]);
@@ -185,14 +186,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             if (!empty($ids_to_delete)) {
                 $in_query = implode(',', array_fill(0, count($ids_to_delete), '?'));
-
-                // 3. FORCE DELETE DEPENDENCIES (Cart, Reviews, Gallery)
                 $pdo->prepare("DELETE FROM CARTITEM WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $pdo->prepare("DELETE FROM REVIEW WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $pdo->prepare("DELETE FROM ITEM_GALLERY WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $pdo->prepare("DELETE FROM ITEMCHARM WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
-
-                // 4. Finally Delete Items
                 $pdo->prepare("DELETE FROM ITEM WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $success_msg = "Product(s) deleted successfully!";
             }
@@ -220,13 +217,11 @@ $order_clause = $sort_map[$sort_by] ?? $sort_map['item_id_desc'];
 
 $where_sql = implode(' AND ', $where_clauses);
 
-// 1. COUNT GROUPS
 $total_items = $pdo->prepare("SELECT COUNT(DISTINCT COALESCE(PARENT_ID, ITEM_ID)) FROM ITEM i WHERE $where_sql");
 $total_items->execute($params);
 $total_items = $total_items->fetchColumn();
 $total_pages = ceil($total_items / $items_per_page);
 
-// 2. FETCH GROUPED ITEMS
 $sql = "SELECT i.*, d.DESIGNER_NAME, COUNT(*) as variant_count 
         FROM ITEM i 
         LEFT JOIN DESIGNER d ON i.DESIGNER_ID = d.DESIGNER_ID 
@@ -253,7 +248,6 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../assets/css/dashboard.css">
 
     <style>
-        /* ... (KEEP YOUR EXISTING CSS FROM PREVIOUS STEPS) ... */
         .variant-badge {
             font-size: 0.7rem;
             background: #eff6ff;
@@ -265,7 +259,6 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             display: inline-block;
         }
 
-        /* Include full CSS block here or link to external file */
         .modal {
             display: none;
             position: fixed;
@@ -805,10 +798,21 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($items as $item): ?>
                         <div class="product-row">
                             <div class="product-image">
-                                <?php if ($item['ITEM_IMAGE']): ?>
-                                    <img src="<?php echo htmlspecialchars($item['ITEM_IMAGE']); ?>" alt="Img">
+                                <?php if (!empty($item['ITEM_IMAGE'])): ?>
+                                    <?php
+                                    // 1. Remove any leading slash so we have a clean path (e.g. "images/products/img.jpg")
+                                    $cleanPath = ltrim($item['ITEM_IMAGE'], '/');
+
+                                    // 2. Add "../" to tell the browser to go up one folder from 'admin' to 'tink'
+                                    $displayUrl = '../' . $cleanPath;
+                                    ?>
+                                    <img src="<?php echo htmlspecialchars($displayUrl); ?>" alt="Product"
+                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0;">
                                 <?php else: ?>
-                                    <i class='bx bx-image-alt' style="font-size: 2rem; color: #ccc;"></i>
+                                    <div
+                                        style="width: 50px; height: 50px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                                        <i class='bx bx-image' style="font-size: 1.5rem; color: #cbd5e1;"></i>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                             <div class="product-name">
@@ -1034,14 +1038,12 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             const cat = document.getElementById('newTagCategory').value;
             const name = document.getElementById('newTagName').value.trim();
             if (!name) return;
-
             const existingInputs = document.querySelectorAll(`input[name="item_tags_select[]"][value="${name}"]`);
             if (existingInputs.length > 0) {
                 existingInputs[0].checked = true;
                 document.getElementById('newTagName').value = '';
                 return;
             }
-
             const wrapper = document.querySelector(`#cat-group-${cat} .checkbox-grid`);
             const div = document.createElement('div');
             div.className = 'checkbox-item';
@@ -1063,11 +1065,13 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             existingGallery.forEach((url, index) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
+                // FIXED: Handle both path formats for preview
+                const displayPath = '../' + url.replace(/^\//, '');
                 item.onclick = (e) => {
-                    if (!e.target.closest('.gallery-item-remove')) openLightbox(url);
+                    if (!e.target.closest('.gallery-item-remove')) openLightbox(displayPath);
                 };
                 item.innerHTML =
-                    `<img src="${url}"><button type="button" class="gallery-item-remove" onclick="removeExistingImage(${index})"><i class='bx bx-x'></i></button>`;
+                    `<img src="${displayPath}"><button type="button" class="gallery-item-remove" onclick="removeExistingImage(${index})"><i class='bx bx-x'></i></button>`;
                 preview.appendChild(item);
             });
             galleryFiles.forEach((file, index) => {
@@ -1120,15 +1124,11 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (mode === 'edit') {
                 document.getElementById('modalTitle').textContent = 'Edit Product';
-
-                // FETCH ALL VARIANTS NOW
                 fetch(`api/get-product.php?item_id=${id}`)
                     .then(r => r.json())
                     .then(data => {
-                        // Normalize data to array (even if single item)
                         const items = Array.isArray(data) ? data : [data];
                         const baseItem = items[0];
-
                         document.getElementById('baseName').value = baseItem.ITEM_NAME;
                         document.getElementById('itemCategory').value = baseItem.ITEM_CATEGORY;
                         $('#itemCategory').trigger('change');
@@ -1158,15 +1158,12 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 }
                             });
                         }
-
                         if (baseItem.GALLERY_IMAGES) {
                             try {
                                 existingGallery = JSON.parse(baseItem.GALLERY_IMAGES);
                                 updateGalleryPreview();
                             } catch (e) {}
                         }
-
-                        // Add ALL variants to form
                         items.forEach(item => {
                             addVariantRow(item);
                         });
