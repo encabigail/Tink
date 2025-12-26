@@ -413,6 +413,7 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
         }
 
         // --- ORDERS MODAL LOGIC (UPDATED) ---
+        // --- ORDERS MODAL LOGIC (FIXED) ---
         function openOrdersModal(customerId, customerName) {
             const modal = document.getElementById('ordersModal');
             const title = document.getElementById('ordersModalTitle');
@@ -424,9 +425,10 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
             title.innerText = `Orders: ${customerName}`;
             modal.classList.add('active');
             loader.style.display = 'block';
-            body.style.display = 'none';
+            body.style.display = 'none'; // Hide list until loaded
 
             // Fetch Orders from API
+            // Ensure path matches where you saved the file above
             fetch(`api/get-customer-orders.php?id=${customerId}`)
                 .then(res => res.json())
                 .then(data => {
@@ -434,7 +436,7 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                     body.style.display = 'block';
                     list.innerHTML = '';
 
-                    if (data.length > 0) {
+                    if (Array.isArray(data) && data.length > 0) {
                         noMsg.style.display = 'none';
                         data.forEach(order => {
                             const dateObj = new Date(order.ORDER_DATE);
@@ -443,6 +445,9 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                                 hour: '2-digit',
                                 minute: '2-digit'
                             });
+
+                            // Parse total safely
+                            const totalAmount = parseFloat(order.ORDER_TOTAL || 0).toFixed(2);
 
                             const row = `
                             <tr>
@@ -456,7 +461,7 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                                     <small style="color:var(--text-light);">${timeStr}</small>
                                 </td>
                                 <td><span class="status-badge ${order.ORDER_STATUS.toLowerCase()}">${order.ORDER_STATUS}</span></td>
-                                <td style="text-align: right; font-weight:600;">$${parseFloat(order.ORDER_TOTAL).toFixed(2)}</td>
+                                <td style="text-align: right; font-weight:600;">RM ${totalAmount}</td>
                             </tr>
                         `;
                             list.innerHTML += row;
@@ -467,11 +472,11 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                 })
                 .catch(err => {
                     console.error(err);
-                    alert("Failed to load orders.");
-                    closeModal('ordersModal');
+                    loader.style.display = 'none';
+                    noMsg.style.display = 'block';
+                    noMsg.innerText = "Error loading orders.";
                 });
         }
-
         // Shared Close Function
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');

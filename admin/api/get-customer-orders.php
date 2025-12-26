@@ -1,22 +1,32 @@
 <?php
-// FILE: admin/api/get-customer-orders.php
-require_once '../../config.php';
 
-// Clean output buffer to ensure valid JSON
+/**
+ * API Endpoint: Get Orders for a Specific Customer
+ * Used by: customers.php modal
+ */
+
+require_once '../../config.php'; // Adjust path if needed
+
+// Prevent any output before JSON
 ob_clean();
 header('Content-Type: application/json');
 
 if (!isset($_GET['id'])) {
-    echo json_encode(['error' => 'No Customer ID provided']);
+    echo json_encode([]);
     exit;
 }
 
 $customer_id = intval($_GET['id']);
 
 try {
-    // Select orders for this customer using backticks for the table name `ORDER`
+    // Fetch orders for this customer
+    // We select ORDER_TOTAL explicitly to fix the "undefined" error in JS
     $stmt = $pdo->prepare("
-        SELECT ORDER_ID, ORDER_DATE, ORDER_STATUS, ORDER_TOTALAMOUNT 
+        SELECT 
+            ORDER_ID, 
+            ORDER_DATE, 
+            ORDER_STATUS, 
+            ORDER_TOTAL 
         FROM `ORDER` 
         WHERE CUSTOMER_ID = ? 
         ORDER BY ORDER_DATE DESC
@@ -26,5 +36,6 @@ try {
 
     echo json_encode($orders);
 } catch (Exception $e) {
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    // Return empty array on error so frontend doesn't crash
+    echo json_encode([]);
 }

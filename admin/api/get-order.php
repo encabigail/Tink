@@ -23,13 +23,13 @@ if (!isset($_GET['id'])) {
 $order_id = intval($_GET['id']);
 
 try {
-    // 1. Fetch Order Details (DIRECT LINK TO CUSTOMER - thanks to the fix!)
+    // 1. Fetch Order Details
     $stmt = $pdo->prepare("
         SELECT 
             o.ORDER_ID, 
             o.ORDER_DATE, 
             o.ORDER_STATUS, 
-            o.ORDER_TOTALAMOUNT, 
+            o.ORDER_TOTAL, 
             o.CART_ID, 
             c.CUSTOMER_NAME, 
             c.CUSTOMER_EMAIL
@@ -46,7 +46,7 @@ try {
         exit;
     }
 
-    // 2. Fetch Items in Cart (Still from CARTITEM, linked via CART_ID)
+    // 2. Fetch Items in Cart
     $items = [];
     if (!empty($order['CART_ID'])) {
         $stmtItems = $pdo->prepare("
@@ -62,6 +62,19 @@ try {
         ");
         $stmtItems->execute([$order['CART_ID']]);
         $items = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+
+        // --- THE FIX IS HERE ---
+        // We modify the image path before sending it to the frontend
+        foreach ($items as &$item) {
+            if (!empty($item['ITEM_IMAGE'])) {
+                // 1. Remove leading slash so we have "images/products/..."
+                $cleanPath = ltrim($item['ITEM_IMAGE'], '/');
+
+                // 2. Add "../" so the admin page looks in the parent directory
+                $item['ITEM_IMAGE'] = '../' . $cleanPath;
+            }
+        }
+        // -----------------------
     }
 
     // Return JSON response

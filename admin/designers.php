@@ -9,6 +9,7 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 require_once '../config.php'; // Your database connection
+
 // --- HANDLE ACTIONS ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
@@ -136,7 +137,6 @@ $total_items_linked = array_sum(array_column($designers, 'item_count'));
                 <li><a href="dashboard.php"><i class='bx bxs-dashboard'></i> <span>Dashboard</span></a></li>
                 <li><a href="catalog.php"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             fill="currentColor" viewBox="0 0 24 24">
-                            <!--Boxicons v3.0.6 https://boxicons.com | License  https://docs.boxicons.com/free-->
                             <path
                                 d="m21.45 11.11-3-1.5-2.68-1.34-.03-.03-1.34-2.68-1.5-3c-.34-.68-1.45-.68-1.79 0l-1.5 3-1.34 2.68-.03.03-2.68 1.34-3 1.5c-.34.17-.55.52-.55.89s.21.72.55.89l3 1.5 2.68 1.34.03.03 1.34 2.68 1.5 3c.17.34.52.55.89.55s.72-.21.89-.55l1.5-3 1.34-2.68.03-.03 2.68-1.34 3-1.5c.34-.17.55-.52.55-.89s-.21-.72-.55-.89ZM19.5 1.5l-.94 2.06-2.06.94 2.06.94.94 2.06.94-2.06 2.06-.94-2.06-.94z">
                             </path>
@@ -227,7 +227,6 @@ $total_items_linked = array_sum(array_column($designers, 'item_count'));
                                             title="Manage Items & Stock">
                                             <i class='bx bx-list-ul'></i>
                                         </button>
-
                                         <button class="btn-icon btn-edit"
                                             onclick="openModal('edit', <?php echo $d['DESIGNER_ID']; ?>, '<?php echo htmlspecialchars(addslashes($d['DESIGNER_NAME'])); ?>')"
                                             title="Edit Name">
@@ -280,11 +279,9 @@ $total_items_linked = array_sum(array_column($designers, 'item_count'));
                 <h2 id="itemsModalTitle">Manage Items</h2>
                 <button class="btn-close" onclick="closeModal('itemsModal')">&times;</button>
             </div>
-
             <div id="itemsLoading" style="text-align: center; padding: 20px;">
                 <i class='bx bx-loader-alt bx-spin' style="font-size: 2rem; color: var(--orange-accent);"></i>
             </div>
-
             <div id="itemsBody" style="display: none;">
                 <table class="styled-table">
                     <thead>
@@ -354,11 +351,21 @@ $total_items_linked = array_sum(array_column($designers, 'item_count'));
                     if (data.length > 0) {
                         noMsg.style.display = 'none';
                         data.forEach(item => {
+                            // --- FIX: PATH CORRECTION LOGIC START ---
+                            let imgPath = '../assets/img/no-img.png'; // Default
+                            if (item.ITEM_IMAGE) {
+                                // 1. Remove leading slash: /images/products/foo.jpg -> images/products/foo.jpg
+                                const cleanPath = item.ITEM_IMAGE.replace(/^\//, '');
+                                // 2. Prepend ../ to go up from 'admin' to 'root'
+                                imgPath = '../' + cleanPath;
+                            }
+                            // --- FIX: PATH CORRECTION LOGIC END ---
+
                             const row = document.createElement('tr');
                             row.innerHTML = `
                             <td>
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="${item.ITEM_IMAGE || '../assets/img/no-img.png'}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+                                    <img src="${imgPath}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
                                     <span>${item.ITEM_NAME}</span>
                                 </div>
                             </td>
@@ -366,7 +373,7 @@ $total_items_linked = array_sum(array_column($designers, 'item_count'));
                             <td>RM ${parseFloat(item.ITEM_PRICE).toFixed(2)}</td>
                             <td>
                                 <input type="number" id="stock-${item.ITEM_ID}" value="${item.ITEM_STOCK}" min="0" 
-                                       style="width: 80px; padding: 5px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                     style="width: 80px; padding: 5px; border: 1px solid var(--border-color); border-radius: 4px;">
                             </td>
                             <td>
                                 <button class="btn-submit" style="padding: 5px 10px; font-size: 0.8rem;" onclick="updateStock(${item.ITEM_ID})">

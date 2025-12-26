@@ -48,44 +48,46 @@ foreach ($raw_items as $item) {
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/designer-selected.css">
 </head>
 
 <body>
 
     <?php include 'components/header.php'; ?>
 
-    <div class="page-title">
-        <div
-            style="font-size: 0.9rem; letter-spacing: 2px; color: #888; margin-bottom: 10px; text-transform: uppercase;">
-            Designer Collection
-        </div>
-        <h1><?= htmlspecialchars($designer_info['DESIGNER_NAME']) ?></h1>
+    <div class="designer-header">
+        <div class="subtitle">Designer Collection</div>
+        <h1 class="title"><?= htmlspecialchars($designer_info['DESIGNER_NAME']) ?></h1>
     </div>
 
-    <div style="max-width: 1400px; margin: 0 auto; padding: 0 40px 100px;">
+    <div class="designer-container">
 
-        <div style="margin-bottom: 30px;">
-            <a href="designers.php" style="font-size: 0.9rem; color: #666; text-decoration: underline;">
+        <div class="back-link">
+            <a href="designers.php">
                 <i class="fa-solid fa-arrow-left"></i> Back to Designers
             </a>
         </div>
 
-        <main class="product-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <main class="product-grid">
             <?php if (empty($grouped_products)): ?>
-                <div style="grid-column:1/-1; text-align:center; padding:60px; color:#888;">
-                    <i class="fa-regular fa-folder-open" style="font-size:2.5rem; margin-bottom:15px;"></i>
+                <div class="no-products">
+                    <i class="fa-regular fa-folder-open"></i>
                     <p>No products found for this designer yet.</p>
                 </div>
             <?php else: ?>
                 <?php foreach ($grouped_products as $group):
                     $base = $group['base'];
                     $variants = $group['variants'];
+
+                    // Image path fix
+                    $imgUrl = !empty($base['ITEM_IMAGE']) ? ltrim($base['ITEM_IMAGE'], '/') : '';
                 ?>
                     <div class="product-card">
                         <div class="image-wrapper">
-                            <a href="product_detail.php?id=<?= $base['ITEM_ID'] ?>">
-                                <img src="<?= htmlspecialchars($base['ITEM_IMAGE']) ?>" id="img-<?= $base['ITEM_ID'] ?>"
+                            <a href="product_details.php?id=<?= $base['ITEM_ID'] ?>">
+                                <img src="<?= htmlspecialchars($imgUrl) ?>" id="img-<?= $base['ITEM_ID'] ?>"
                                     alt="<?= htmlspecialchars($base['ITEM_NAME']) ?>">
                             </a>
 
@@ -93,12 +95,15 @@ foreach ($raw_items as $item) {
                                 <div class="swatches">
                                     <?php foreach ($variants as $v):
                                         $mat = strtolower($v['ITEM_MATERIAL']);
-                                        $cls = 'silver';
+                                        $cls = 'silver'; // Default
                                         if (strpos($mat, 'gold') !== false) $cls = 'gold';
                                         if (strpos($mat, 'rose') !== false) $cls = 'rose';
+
+                                        // Variant Image Fix
+                                        $vImgUrl = !empty($v['ITEM_IMAGE']) ? ltrim($v['ITEM_IMAGE'], '/') : '';
                                     ?>
                                         <span class="swatch <?= $cls ?>" onmouseover="updateCard(this, '<?= $base['ITEM_ID'] ?>')"
-                                            data-image="<?= htmlspecialchars($v['ITEM_IMAGE']) ?>"
+                                            data-image="<?= htmlspecialchars($vImgUrl) ?>"
                                             data-price="RM <?= number_format($v['ITEM_PRICE'], 2) ?>"
                                             data-name="<?= htmlspecialchars($v['ITEM_NAME']) ?>">
                                         </span>
@@ -107,12 +112,13 @@ foreach ($raw_items as $item) {
                             <?php endif; ?>
                         </div>
 
-                        <div class="product-name" id="title-<?= $base['ITEM_ID'] ?>">
-                            <?= htmlspecialchars($base['ITEM_NAME']) ?>
-                        </div>
-
-                        <div class="price" id="price-<?= $base['ITEM_ID'] ?>">
-                            RM <?= number_format($base['ITEM_PRICE'], 2) ?>
+                        <div class="product-info">
+                            <div class="product-name" id="title-<?= $base['ITEM_ID'] ?>">
+                                <?= htmlspecialchars($base['ITEM_NAME']) ?>
+                            </div>
+                            <div class="price" id="price-<?= $base['ITEM_ID'] ?>">
+                                RM <?= number_format($base['ITEM_PRICE'], 2) ?>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -120,9 +126,7 @@ foreach ($raw_items as $item) {
         </main>
     </div>
 
-    <footer class="site-footer">
-        <div style="text-align:center; margin-top:40px; font-size:0.8rem; color:#888;">&copy; 2025 Tink.</div>
-    </footer>
+    <?php include 'components/footer.php'; ?>
 
     <script>
         function updateCard(el, id) {
