@@ -413,7 +413,10 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
         }
 
         // --- ORDERS MODAL LOGIC (UPDATED) ---
+<<<<<<< HEAD
         // --- ORDERS MODAL LOGIC (FIXED) ---
+=======
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
         function openOrdersModal(customerId, customerName) {
             const modal = document.getElementById('ordersModal');
             const title = document.getElementById('ordersModalTitle');
@@ -425,10 +428,16 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
             title.innerText = `Orders: ${customerName}`;
             modal.classList.add('active');
             loader.style.display = 'block';
+<<<<<<< HEAD
             body.style.display = 'none'; // Hide list until loaded
 
             // Fetch Orders from API
             // Ensure path matches where you saved the file above
+=======
+            body.style.display = 'none';
+
+            // Fetch Orders from API
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             fetch(`api/get-customer-orders.php?id=${customerId}`)
                 .then(res => res.json())
                 .then(data => {
@@ -436,7 +445,11 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                     body.style.display = 'block';
                     list.innerHTML = '';
 
+<<<<<<< HEAD
                     if (Array.isArray(data) && data.length > 0) {
+=======
+                    if (data.length > 0) {
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                         noMsg.style.display = 'none';
                         data.forEach(order => {
                             const dateObj = new Date(order.ORDER_DATE);
@@ -446,9 +459,12 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                                 minute: '2-digit'
                             });
 
+<<<<<<< HEAD
                             // Parse total safely
                             const totalAmount = parseFloat(order.ORDER_TOTAL || 0).toFixed(2);
 
+=======
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                             const row = `
                             <tr>
                                 <td>
@@ -461,7 +477,11 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                                     <small style="color:var(--text-light);">${timeStr}</small>
                                 </td>
                                 <td><span class="status-badge ${order.ORDER_STATUS.toLowerCase()}">${order.ORDER_STATUS}</span></td>
+<<<<<<< HEAD
                                 <td style="text-align: right; font-weight:600;">RM ${totalAmount}</td>
+=======
+                                <td style="text-align: right; font-weight:600;">$${parseFloat(order.ORDER_TOTAL).toFixed(2)}</td>
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                             </tr>
                         `;
                             list.innerHTML += row;
@@ -472,11 +492,19 @@ $stats_active = $pdo->query("SELECT COUNT(DISTINCT CUSTOMER_ID) FROM `ORDER`")->
                 })
                 .catch(err => {
                     console.error(err);
+<<<<<<< HEAD
                     loader.style.display = 'none';
                     noMsg.style.display = 'block';
                     noMsg.innerText = "Error loading orders.";
                 });
         }
+=======
+                    alert("Failed to load orders.");
+                    closeModal('ordersModal');
+                });
+        }
+
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
         // Shared Close Function
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');

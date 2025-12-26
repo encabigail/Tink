@@ -37,7 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $designer_id = intval($_POST['designer_id'] ?? 0);
             $is_engravable = isset($_POST['is_engravable']) ? 1 : 0;
 
+<<<<<<< HEAD
             // Parent ID Logic
+=======
+            // Parent ID Logic (Only for Charms)
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             $existing_parent_id = null;
             if ($item_cat === 'Charms' && !empty($_POST['parent_id'])) {
                 $existing_parent_id = intval($_POST['parent_id']);
@@ -58,14 +62,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $stocks = $_POST['var_stock'] ?? [];
             $ids = $_POST['var_id'] ?? [];
 
+<<<<<<< HEAD
             // 3. GROUPING LOGIC
+=======
+            // 3. GROUPING LOGIC (Preserve ID on Edit)
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             if (empty($existing_parent_id) && !empty($ids[0])) {
                 $check_stmt = $pdo->prepare("SELECT PARENT_ID FROM ITEM WHERE ITEM_ID = ?");
                 $check_stmt->execute([intval($ids[0])]);
                 $db_parent = $check_stmt->fetchColumn();
+<<<<<<< HEAD
                 if ($db_parent) $existing_parent_id = $db_parent;
             }
 
+=======
+                if ($db_parent) {
+                    $existing_parent_id = $db_parent;
+                }
+            }
+
+            // Generate New Group ID if needed
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             $final_parent_id = $existing_parent_id;
             if (empty($final_parent_id) && count($names) > 1) {
                 $final_parent_id = rand(10000, 99999);
@@ -74,14 +91,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $final_parent_id = null;
             }
 
+<<<<<<< HEAD
             // 4. GALLERY IMAGES UPLOAD
+=======
+            // 4. GALLERY IMAGES
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             $final_gallery = [];
             if (!empty($_POST['existing_gallery_images'])) {
                 $final_gallery = json_decode($_POST['existing_gallery_images'], true) ?? [];
             }
 
+<<<<<<< HEAD
             $upload_dir = dirname(__DIR__) . '/images/products/';
             if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+=======
+            $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/images/products/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 
             if (!empty($_FILES['base_item_images']['name'][0])) {
                 for ($i = 0; $i < count($_FILES['base_item_images']['name']); $i++) {
@@ -89,19 +117,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $ext = strtolower(pathinfo($_FILES['base_item_images']['name'][$i], PATHINFO_EXTENSION));
                         $filename = 'base_' . time() . '_' . $i . '.' . $ext;
                         if (move_uploaded_file($_FILES['base_item_images']['tmp_name'][$i], $upload_dir . $filename)) {
+<<<<<<< HEAD
                             $final_gallery[] = 'images/products/' . $filename;
+=======
+                            $final_gallery[] = '/images/products/' . $filename;
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                         }
                     }
                 }
             }
             $gallery_json = !empty($final_gallery) ? json_encode(array_values($final_gallery)) : null;
 
+<<<<<<< HEAD
             // --- NEW: FALLBACK IMAGE LOGIC ---
             // If we have gallery images, pick the first one as the default "Product Image"
             $gallery_fallback_image = !empty($final_gallery) ? $final_gallery[0] : null;
 
             // 5. SAVE / UPDATE VARIANTS
             $saved_ids = [];
+=======
+            // 5. SAVE / UPDATE VARIANTS
+            $saved_ids = []; // Keep track of IDs we saved to detect deletions
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 
             for ($i = 0; $i < count($names); $i++) {
                 $v_name = trim($names[$i]);
@@ -111,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $v_id = !empty($ids[$i]) ? intval($ids[$i]) : null;
 
                 $image_path = null;
+<<<<<<< HEAD
                 $has_uploaded_new_image = false;
 
                 // Check specific upload
@@ -136,6 +174,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
                     // Only update image column if we actually have an image path (from upload or fallback)
                     // This ensures we populate it if it was missing, or update it if changed.
+=======
+                if (!empty($_FILES['var_image']['name'][$i])) {
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0777, true);
+                    }
+                    $ext = strtolower(pathinfo($_FILES['var_image']['name'][$i], PATHINFO_EXTENSION));
+                    $filename = 'var_' . time() . '_' . $i . '.' . $ext;
+                    if (move_uploaded_file($_FILES['var_image']['tmp_name'][$i], $upload_dir . $filename)) {
+                        $image_path = '/images/products/' . $filename;
+                    }
+                }
+
+                if ($v_id) {
+                    $sql = "UPDATE ITEM SET DESIGNER_ID=?, ITEM_CATEGORY=?, ITEM_NAME=?, ITEM_DESCRIPTION=?, ITEM_MATERIAL=?, ITEM_PRICE=?, ITEM_STOCK=?, ITEM_TAGS=?, PARENT_ID=?, IS_ENGRAVABLE=?, GALLERY_IMAGES=?";
+                    $params = [$designer_id, $item_cat, $v_name, $item_desc, $v_mat, $v_price, $v_stock, $item_tags, $final_parent_id, $is_engravable, $gallery_json];
+
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                     if ($image_path) {
                         $sql .= ", ITEM_IMAGE=?";
                         $params[] = $image_path;
@@ -146,21 +201,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $pdo->prepare($sql)->execute($params);
                     $saved_ids[] = $v_id;
                 } else {
+<<<<<<< HEAD
                     // INSERT
+=======
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                     $stmt = $pdo->prepare("INSERT INTO ITEM (DESIGNER_ID, ITEM_CATEGORY, ITEM_NAME, ITEM_DESCRIPTION, ITEM_MATERIAL, ITEM_PRICE, ITEM_STOCK, ITEM_IMAGE, ITEM_TAGS, PARENT_ID, IS_ENGRAVABLE, GALLERY_IMAGES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute([$designer_id, $item_cat, $v_name, $item_desc, $v_mat, $v_price, $v_stock, $image_path, $item_tags, $final_parent_id, $is_engravable, $gallery_json]);
                     $saved_ids[] = $pdo->lastInsertId();
                 }
             }
 
+<<<<<<< HEAD
             // 6. PRUNE DELETED VARIANTS
+=======
+            // 6. PRUNE DELETED VARIANTS (New Fix)
+            // If we have a group (Parent ID), check for items in DB that were NOT in the submitted form
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             if ($final_parent_id) {
                 $stmt = $pdo->prepare("SELECT ITEM_ID FROM ITEM WHERE PARENT_ID = ?");
                 $stmt->execute([$final_parent_id]);
                 $db_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+<<<<<<< HEAD
                 $ids_to_remove = array_diff($db_ids, $saved_ids);
                 if (!empty($ids_to_remove)) {
                     $in_remove = implode(',', array_fill(0, count($ids_to_remove), '?'));
+=======
+
+                // Find IDs in DB that are missing from the saved list
+                $ids_to_remove = array_diff($db_ids, $saved_ids);
+
+                if (!empty($ids_to_remove)) {
+                    $in_remove = implode(',', array_fill(0, count($ids_to_remove), '?'));
+                    // Delete dependencies first
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                     $pdo->prepare("DELETE FROM CARTITEM WHERE ITEM_ID IN ($in_remove)")->execute(array_values($ids_to_remove));
                     $pdo->prepare("DELETE FROM ITEM WHERE ITEM_ID IN ($in_remove)")->execute(array_values($ids_to_remove));
                 }
@@ -169,12 +242,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $success_msg = "Product(s) saved successfully!";
         }
 
+<<<<<<< HEAD
         if ($action === 'delete_product') {
             $target_id = intval($_POST['item_id']);
+=======
+        // --- FIXED DELETE LOGIC ---
+        if ($action === 'delete_product') {
+            $target_id = intval($_POST['item_id']);
+
+            // 1. Check if this item is part of a group
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             $stmt = $pdo->prepare("SELECT PARENT_ID FROM ITEM WHERE ITEM_ID = ?");
             $stmt->execute([$target_id]);
             $parent_id = $stmt->fetchColumn();
 
+<<<<<<< HEAD
+=======
+            // 2. Identify ALL IDs to delete (The specific item + any siblings if it's a group)
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             if ($parent_id) {
                 $stmt = $pdo->prepare("SELECT ITEM_ID FROM ITEM WHERE PARENT_ID = ?");
                 $stmt->execute([$parent_id]);
@@ -186,10 +271,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             if (!empty($ids_to_delete)) {
                 $in_query = implode(',', array_fill(0, count($ids_to_delete), '?'));
+<<<<<<< HEAD
+=======
+
+                // 3. FORCE DELETE DEPENDENCIES (Cart, Reviews, Gallery)
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                 $pdo->prepare("DELETE FROM CARTITEM WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $pdo->prepare("DELETE FROM REVIEW WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $pdo->prepare("DELETE FROM ITEM_GALLERY WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $pdo->prepare("DELETE FROM ITEMCHARM WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
+<<<<<<< HEAD
+=======
+
+                // 4. Finally Delete Items
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                 $pdo->prepare("DELETE FROM ITEM WHERE ITEM_ID IN ($in_query)")->execute($ids_to_delete);
                 $success_msg = "Product(s) deleted successfully!";
             }
@@ -217,11 +312,19 @@ $order_clause = $sort_map[$sort_by] ?? $sort_map['item_id_desc'];
 
 $where_sql = implode(' AND ', $where_clauses);
 
+<<<<<<< HEAD
+=======
+// 1. COUNT GROUPS
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 $total_items = $pdo->prepare("SELECT COUNT(DISTINCT COALESCE(PARENT_ID, ITEM_ID)) FROM ITEM i WHERE $where_sql");
 $total_items->execute($params);
 $total_items = $total_items->fetchColumn();
 $total_pages = ceil($total_items / $items_per_page);
 
+<<<<<<< HEAD
+=======
+// 2. FETCH GROUPED ITEMS
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 $sql = "SELECT i.*, d.DESIGNER_NAME, COUNT(*) as variant_count 
         FROM ITEM i 
         LEFT JOIN DESIGNER d ON i.DESIGNER_ID = d.DESIGNER_ID 
@@ -248,6 +351,10 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../assets/css/dashboard.css">
 
     <style>
+<<<<<<< HEAD
+=======
+        /* ... (KEEP YOUR EXISTING CSS FROM PREVIOUS STEPS) ... */
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
         .variant-badge {
             font-size: 0.7rem;
             background: #eff6ff;
@@ -259,6 +366,10 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             display: inline-block;
         }
 
+<<<<<<< HEAD
+=======
+        /* Include full CSS block here or link to external file */
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
         .modal {
             display: none;
             position: fixed;
@@ -734,6 +845,7 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <aside class="sidebar">
         <div class="logo">
+<<<<<<< HEAD
             <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 288 149.67">
                 <defs>
                     <style>
@@ -767,17 +879,31 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     d="M251.51,70.75h0,0M251.51,75.7l.12.1s0,0,.01,0c0,0,0,0-.01,0l-.12.1-.12-.1s0,0-.01,0c0,0,0,0,.01,0l.12-.1M251.51,79.89l.22.09c.25.09.4.32.4.58s-.16.49-.4.58l-.22.09-.22-.09c-.25-.09-.4-.32-.4-.58s.16-.49.4-.58l.22-.09M251.51,84.79l.03.07c.14.29.34.49.59.62-.25.13-.45.33-.59.62l-.03.07v-.18l-.06-.09c-.13-.18-.28-.31-.47-.42.2-.11.35-.24.47-.42l.06-.09v-.18M251.51,90.08l.06.09c.1.15.21.26.36.36-.18.11-.31.25-.41.43-.1-.19-.24-.33-.41-.43.14-.09.26-.21.36-.36l.06-.09M251.51,70.41c-.19,0-.35.16-.35.35v4.79c-.16.14-.41.2-.8.24-.05,0-.05.06,0,.07.4.03.64.1.8.24v3.56c-.37.14-.63.49-.63.9s.26.76.63.9v3.41c-.23.32-.59.47-1.26.54-.11.01-.11.14,0,.15.67.07,1.03.22,1.26.54v3.87c-.18.28-.47.41-.97.48-.09.01-.09.14,0,.15.88.12,1.14.4,1.24,1.44,0,.04.04.07.07.07s.07-.02.07-.07c.11-1.04.36-1.32,1.24-1.44.09-.01.09-.14,0-.15-.5-.07-.78-.2-.97-.48v-3.72c.21-.44.59-.61,1.36-.7.11-.01.11-.14,0-.15-.77-.08-1.15-.26-1.36-.7v-3.26c.37-.14.63-.49.63-.9s-.26-.76-.63-.9v-3.56c.16-.14.41-.2.8-.24.05,0,.05-.06,0-.07-.4-.03-.64-.1-.8-.24v-4.79c0-.19-.16-.35-.35-.35h0Z" />
                 <path class="cls-1"
                     d="M192.82,49.55c.1.19.24.33.42.42-.18.1-.32.23-.42.42-.1-.19-.24-.33-.42-.42.18-.1.32-.23.42-.42M192.82,53.05c.1.19.24.33.42.42-.18.1-.32.23-.42.42-.1-.19-.24-.33-.42-.42.18-.1.32-.23.42-.42M192.82,62.19c.28,1.49.89,2.14,2.37,2.44-1.46.29-2.08.9-2.37,2.39-.29-1.5-.9-2.1-2.37-2.39,1.47-.3,2.08-.95,2.36-2.44M192.82,46.06c-.09,0-.16.07-.16.16v2.98c-.16.52-.5.67-1.34.73-.05,0-.05.07,0,.08.84.06,1.18.21,1.34.73v1.97c-.16.52-.5.67-1.34.73-.05,0-.05.07,0,.08.84.07,1.18.21,1.34.73v7.1c-.26,2.4-.9,2.95-3.47,3.17-.14.01-.14.21,0,.22,2.78.24,3.31.84,3.53,3.77,0,.06.05.09.1.09s.09-.03.1-.09c.22-2.94.75-3.54,3.53-3.77.14-.01.14-.21,0-.22-2.57-.22-3.21-.77-3.47-3.17v-7.1c.16-.52.5-.67,1.34-.73.05,0,.05-.07,0-.08-.84-.07-1.18-.21-1.34-.73v-1.97c.16-.52.5-.67,1.34-.73.05,0,.05-.07,0-.08-.84-.06-1.18-.21-1.34-.73v-2.98c0-.09-.07-.16-.16-.16h0Z" />
+=======
+            <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" viewBox="0 0 288 149.67"
+                style="width: 100%; height: auto; max-width: 150px;">
+                <path
+                    d="M108.85,55.5h-.66c-4.05-14.45-12.56-14.49-23.14-14.49v66.68c0,5.53,5.29,9.31,10.02,9.31v.93h-36.91v-.93c4.73,0,10.02-3.78,10.02-9.31V41.01c-10.57,0-19.15.04-23.19,14.49h-.68l.24-15.54h64.13l.18,15.54Z"
+                    fill="#000" />
+                <path
+                    d="M140.41,111.44h0c-3.72,2.98-10.76,8.06-16.25,8.06-6.75,0-11.59-5.28-11.81-11.28v-24.56c-.21-3.4-1.68-6.97-6.83-6.97v-.82c9.34-1.17,20.13-6.58,20.13-6.58h.68v36.26c.28,4.99,2.5,8.07,6.49,8.07,3.09,0,4.82-1.22,6.94-3.11h0"
+                    fill="#000" />
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             </svg>
         </div>
         <nav>
             <ul>
                 <li><a href="dashboard.php"><i class='bx bxs-dashboard'></i> <span>Dashboard</span></a></li>
+<<<<<<< HEAD
                 <li class="active"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             fill="currentColor" viewBox="0 0 24 24">
                             <path
                                 d="m21.45 11.11-3-1.5-2.68-1.34-.03-.03-1.34-2.68-1.5-3c-.34-.68-1.45-.68-1.79 0l-1.5 3-1.34 2.68-.03.03-2.68 1.34-3 1.5c-.34.17-.55.52-.55.89s.21.72.55.89l3 1.5 2.68 1.34.03.03 1.34 2.68 1.5 3c.17.34.52.55.89.55s.72-.21.89-.55l1.5-3 1.34-2.68.03-.03 2.68-1.34 3-1.5c.34-.17.55-.52.55-.89s-.21-.72-.55-.89ZM19.5 1.5l-.94 2.06-2.06.94 2.06.94.94 2.06.94-2.06 2.06-.94-2.06-.94z">
                             </path>
                         </svg> <span>Items/Catalog</span></a></li>
+=======
+                <li class="active"><a href="#"><i class='bx bxs-component'></i> <span>Items/Catalog</span></a></li>
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                 <li><a href="customers.php"><i class='bx bxs-user-circle'></i> <span>Customers</span></a></li>
                 <li><a href="orders.php"><i class='bx bxs-shopping-bags'></i> <span>Orders</span></a></li>
                 <li><a href="designers.php"><i class='bx bxs-palette'></i> <span>Designers</span></a></li>
@@ -828,6 +954,7 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($items as $item): ?>
                         <div class="product-row">
                             <div class="product-image">
+<<<<<<< HEAD
                                 <?php if (!empty($item['ITEM_IMAGE'])): ?>
                                     <?php
                                     // 1. Remove any leading slash so we have a clean path (e.g. "images/products/img.jpg")
@@ -843,6 +970,12 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         style="width: 50px; height: 50px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
                                         <i class='bx bx-image' style="font-size: 1.5rem; color: #cbd5e1;"></i>
                                     </div>
+=======
+                                <?php if ($item['ITEM_IMAGE']): ?>
+                                    <img src="<?php echo htmlspecialchars($item['ITEM_IMAGE']); ?>" alt="Img">
+                                <?php else: ?>
+                                    <i class='bx bx-image-alt' style="font-size: 2rem; color: #ccc;"></i>
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                                 <?php endif; ?>
                             </div>
                             <div class="product-name">
@@ -1068,12 +1201,20 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             const cat = document.getElementById('newTagCategory').value;
             const name = document.getElementById('newTagName').value.trim();
             if (!name) return;
+<<<<<<< HEAD
+=======
+
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             const existingInputs = document.querySelectorAll(`input[name="item_tags_select[]"][value="${name}"]`);
             if (existingInputs.length > 0) {
                 existingInputs[0].checked = true;
                 document.getElementById('newTagName').value = '';
                 return;
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
             const wrapper = document.querySelector(`#cat-group-${cat} .checkbox-grid`);
             const div = document.createElement('div');
             div.className = 'checkbox-item';
@@ -1095,6 +1236,7 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             existingGallery.forEach((url, index) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
+<<<<<<< HEAD
                 // FIXED: Handle both path formats for preview
                 const displayPath = '../' + url.replace(/^\//, '');
                 item.onclick = (e) => {
@@ -1102,6 +1244,13 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 };
                 item.innerHTML =
                     `<img src="${displayPath}"><button type="button" class="gallery-item-remove" onclick="removeExistingImage(${index})"><i class='bx bx-x'></i></button>`;
+=======
+                item.onclick = (e) => {
+                    if (!e.target.closest('.gallery-item-remove')) openLightbox(url);
+                };
+                item.innerHTML =
+                    `<img src="${url}"><button type="button" class="gallery-item-remove" onclick="removeExistingImage(${index})"><i class='bx bx-x'></i></button>`;
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                 preview.appendChild(item);
             });
             galleryFiles.forEach((file, index) => {
@@ -1154,11 +1303,23 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (mode === 'edit') {
                 document.getElementById('modalTitle').textContent = 'Edit Product';
+<<<<<<< HEAD
                 fetch(`api/get-product.php?item_id=${id}`)
                     .then(r => r.json())
                     .then(data => {
                         const items = Array.isArray(data) ? data : [data];
                         const baseItem = items[0];
+=======
+
+                // FETCH ALL VARIANTS NOW
+                fetch(`api/get-product.php?item_id=${id}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        // Normalize data to array (even if single item)
+                        const items = Array.isArray(data) ? data : [data];
+                        const baseItem = items[0];
+
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                         document.getElementById('baseName').value = baseItem.ITEM_NAME;
                         document.getElementById('itemCategory').value = baseItem.ITEM_CATEGORY;
                         $('#itemCategory').trigger('change');
@@ -1188,12 +1349,21 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 }
                             });
                         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                         if (baseItem.GALLERY_IMAGES) {
                             try {
                                 existingGallery = JSON.parse(baseItem.GALLERY_IMAGES);
                                 updateGalleryPreview();
                             } catch (e) {}
                         }
+<<<<<<< HEAD
+=======
+
+                        // Add ALL variants to form
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
                         items.forEach(item => {
                             addVariantRow(item);
                         });

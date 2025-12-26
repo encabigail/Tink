@@ -3,7 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
+<<<<<<< HEAD
 -- Generation Time: Dec 26, 2025 at 01:49 PM
+=======
+-- Generation Time: Dec 21, 2025 at 05:58 PM
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -227,6 +231,7 @@ CREATE TABLE `item` (
 --
 
 INSERT INTO `item` (`ITEM_ID`, `DESIGNER_ID`, `ITEM_CATEGORY`, `ITEM_NAME`, `ITEM_DESCRIPTION`, `ITEM_MATERIAL`, `ITEM_PRICE`, `ITEM_STOCK`, `IS_ENGRAVABLE`, `ITEM_IMAGE`, `GALLERY_IMAGES`, `ITEM_TAGS`, `PARENT_ID`, `ITEM_WEIGHT`, `ITEM_SIZE`, `ITEM_COLOR`, `ITEM_ACTIVE`) VALUES
+<<<<<<< HEAD
 (3001, 4, 'Rings', 'Vintage Ruby Ring', 'A timeless statement piece featuring a deep red ruby set in antique-finish gold.', '14k Gold with Ruby', 150.00, 15, 1, 'images/products/var_1766752995_0.png', '[\"\\/images\\/products\\/base_1766479849_0.png\",\"\\/images\\/products\\/base_1766479849_1.png\",\"\\/images\\/products\\/base_1766479849_2.png\",\"\\/images\\/products\\/base_1766479849_3.png\",\"\\/images\\/products\\/base_1766479849_4.png\",\"\\/images\\/products\\/base_1766479849_5.png\"]', 'Statement, Vintage, Ruby', 27800, 4.50, '7', 'Red', 1),
 (3002, 5, 'Rings', 'Turquoise Statement Ring', 'Bold turquoise stone set in a chunky silver bezel.', 'Sterling Silver with Turquoise', 85.00, 20, 0, 'images/products/var_1766752977_0.png', '[\"\\/images\\/products\\/base_1766479822_0.png\",\"\\/images\\/products\\/base_1766479822_1.png\",\"\\/images\\/products\\/base_1766479822_2.png\",\"\\/images\\/products\\/base_1766479822_3.png\",\"\\/images\\/products\\/base_1766479822_4.png\",\"\\/images\\/products\\/base_1766479822_5.png\"]', 'Chunky, Boho, Turquoise', 43784, 6.20, '8', 'Blue', 1),
 (3003, 1, 'Necklaces', 'Sterling Silver Heart Necklace', 'Delicate heart pendant on a fine silver chain.', '925 Sterling Silver', 45.00, 100, 1, 'images/products/var_1766752955_0.png', '[\"\\/images\\/products\\/base_1766479799_0.png\",\"\\/images\\/products\\/base_1766479799_1.png\",\"\\/images\\/products\\/base_1766479799_2.png\"]', 'Minimalist, Heart, Love', NULL, 3.10, '45cm', 'Silver', 1),
@@ -272,6 +277,36 @@ INSERT INTO `item` (`ITEM_ID`, `DESIGNER_ID`, `ITEM_CATEGORY`, `ITEM_NAME`, `ITE
 (3053, 4, 'Rings', 'Vintage Ruby Ring', 'A timeless statement piece featuring a deep red ruby set in antique-finish gold.', 'Sterling Gold with Ruby', 150.00, 15, 1, 'images/products/var_1766752995_1.png', '[\"\\/images\\/products\\/base_1766479849_0.png\",\"\\/images\\/products\\/base_1766479849_1.png\",\"\\/images\\/products\\/base_1766479849_2.png\",\"\\/images\\/products\\/base_1766479849_3.png\",\"\\/images\\/products\\/base_1766479849_4.png\",\"\\/images\\/products\\/base_1766479849_5.png\"]', 'Statement, Vintage, Ruby', 27800, NULL, NULL, NULL, 1),
 (3060, 9, 'Bracelets', 'Beaded Stretch Bracelet', 'Casual beaded bracelet on durable elastic cord.', 'Glass Beads with Silver Clasp', 20.00, 100, 0, 'images/products/var_1766753052_0.png', '[\"\\/images\\/products\\/base_1766478767_0.png\",\"\\/images\\/products\\/base_1766478767_1.png\",\"\\/images\\/products\\/base_1766478767_2.png\",\"\\/images\\/products\\/base_1766478767_3.png\",\"\\/images\\/products\\/base_1766478767_4.png\",\"\\/images\\/products\\/base_1766478767_5.png\"]', 'Boho, Casual, Colorful', 41526, NULL, NULL, NULL, 1),
 (3061, 9, 'Bracelets', 'Beaded Stretch Bracelet', 'Casual beaded bracelet on durable elastic cord.', 'Glass Beads with Gold Clasp', 20.00, 100, 0, 'images/products/var_1766753052_1.png', '[\"\\/images\\/products\\/base_1766478767_0.png\",\"\\/images\\/products\\/base_1766478767_1.png\",\"\\/images\\/products\\/base_1766478767_2.png\",\"\\/images\\/products\\/base_1766478767_3.png\",\"\\/images\\/products\\/base_1766478767_4.png\",\"\\/images\\/products\\/base_1766478767_5.png\"]', 'Boho, Casual, Colorful', 41526, NULL, NULL, NULL, 1);
+=======
+(3001, 4, 'Rings', 'Vintage Ruby Ring', 'A timeless statement piece featuring a deep red ruby set in antique-finish gold.', '14k Gold with Ruby', 150.00, 15, 1, '/images/items/ruby_ring.jpg', NULL, 'Vintage, Ruby, Statement', NULL, 4.50, '7', 'Red', 1),
+(3002, 5, 'Rings', 'Turquoise Statement Ring', 'Bold turquoise stone set in a chunky silver bezel.', 'Sterling Silver with Turquoise', 85.00, 20, 0, '/images/items/turquoise_ring.jpg', NULL, 'Boho, Turquoise, Chunky', NULL, 6.20, '8', 'Blue', 1),
+(3003, 1, 'Necklaces', 'Sterling Silver Heart Necklace', 'Delicate heart pendant on a fine silver chain.', '925 Sterling Silver', 45.00, 100, 1, '/images/items/heart_neck.jpg', NULL, 'Minimalist, Heart, Love', NULL, 3.10, '45cm', 'Silver', 1),
+(3004, 3, 'Rings', 'Stackable Gold Bands', 'Set of 3 thin hammered bands, perfect for stacking.', '18k Gold Plated', 120.00, 40, 1, '/images/items/stack_bands.jpg', NULL, 'Minimalist, Set, Gold', NULL, 2.00, '6,7,8', 'Gold', 1),
+(3005, 1, 'Earrings', 'Silver Hoop Earrings', 'Classic medium-sized polished hoops for everyday wear.', '925 Sterling Silver', 30.00, 80, 0, '/images/items/silver_hoops.jpg', NULL, 'Classic, Hoops, Silver', NULL, 4.00, '30mm', 'Silver', 1),
+(3006, 6, 'Necklaces', 'Sapphire Teardrop Pendant', 'Elegant teardrop sapphire surrounded by tiny cubic zirconia.', 'White Gold with Sapphire', 180.00, 10, 0, '/images/items/sapphire_pend.jpg', NULL, 'Elegant, Sapphire, Luxury', NULL, 5.50, '50cm', 'Blue', 1),
+(3007, 5, 'Bracelets', 'Rose Gold Bangle Bracelet', 'Sleek and modern polished bangle with hinge clasp.', '14k Rose Gold', 95.00, 35, 1, '/images/items/rose_bangle.jpg', NULL, 'Modern, Rose Gold, Bangle', NULL, 10.00, 'One Size', 'Rose Gold', 1),
+(3008, 2, 'Bracelets', 'Pearl Strand Bracelet', 'Classic freshwater pearls strung on silk thread.', 'Freshwater Pearl', 60.00, 25, 0, '/images/items/pearl_brace.jpg', NULL, 'Classic, Pearl, Wedding', NULL, 8.00, '18cm', 'White', 1),
+(3009, 2, 'Earrings', 'Pearl Drop Earrings', 'Sophisticated pearl drops on gold hook backings.', 'Gold Vermeil with Pearl', 55.00, 30, 0, '/images/items/pearl_drop.jpg', NULL, 'Elegant, Pearl, Vintage', NULL, 3.50, 'One Size', 'White', 1),
+(3010, 8, 'Rings', 'Opal Signet Ring', 'Mesmerizing opal cabochon set in a classic signet style.', '14k Gold with Opal', 110.00, 12, 1, '/images/items/opal_ring.jpg', NULL, 'Vintage, Opal, Signet', NULL, 5.80, '7', 'Iridescent', 1),
+(3011, 9, 'Rings', 'Moonstone Ring', 'Ethereal moonstone gem that catches the light.', 'Sterling Silver with Moonstone', 75.00, 18, 0, '/images/items/moonstone_ring.jpg', NULL, 'Boho, Moonstone, Magic', NULL, 3.90, '6', 'White', 1),
+(3012, 1, 'Bracelets', 'Minimalist Cuff', 'Simple open cuff design, adjustable fit.', 'Sterling Silver', 40.00, 60, 1, '/images/items/min_cuff.jpg', NULL, 'Minimalist, Cuff, Silver', NULL, 6.00, 'Adjustable', 'Silver', 1),
+(3013, 4, 'Necklaces', 'Locket Necklace', 'Vintage-inspired oval locket that opens to hold a photo.', 'Gold Plated Brass', 65.00, 22, 1, '/images/items/locket.jpg', NULL, 'Vintage, Locket, Memory', NULL, 7.50, '50cm', 'Gold', 1),
+(3014, 10, 'Necklaces', 'Gold Layered Chain', 'Pre-layered duo chain necklace for an instant stacked look.', '18k Gold Plated', 80.00, 45, 0, '/images/items/layer_chain.jpg', NULL, 'Trendy, Layered, Gold', NULL, 8.20, '40cm/45cm', 'Gold', 1),
+(3015, 3, 'Necklaces', 'Gold Infinity Pendant', 'Symbol of everlasting love on a whisper-thin chain.', '14k Gold', 70.00, 55, 0, '/images/items/infinity.jpg', NULL, 'Symbolic, Love, Gold', NULL, 2.50, '45cm', 'Gold', 1),
+(3016, 7, 'Earrings', 'Garnet Drop Earrings', 'Deep red garnets in a teardrop cut.', 'Gold Plated with Garnet', 90.00, 15, 0, '/images/items/garnet_drop.jpg', NULL, 'Gemstone, Garnet, Red', NULL, 4.20, 'One Size', 'Red', 1),
+(3017, 8, 'Bracelets', 'Emerald Tennis Bracelet', 'Luxurious line of emerald simulants.', 'Sterling Silver with Emerald Simulant', 250.00, 8, 0, '/images/items/emerald_tennis.jpg', NULL, 'Luxury, Tennis, Emerald', NULL, 11.00, '17cm', 'Green', 1),
+(3018, 3, 'Rings', 'Diamond Solitaire Ring', 'Premium 0.5ct conflict-free diamond solitaire.', '18k White Gold with Diamond', 500.00, 5, 1, '/images/items/dia_solitaire.jpg', NULL, 'Wedding, Luxury, Diamond', NULL, 4.00, '6', 'Silver', 1),
+(3019, 3, 'Earrings', 'Diamond Halo Studs', 'Brilliant round diamonds surrounded by a halo of sparkle.', '14k White Gold with Diamond', 300.00, 10, 0, '/images/items/halo_studs.jpg', NULL, 'Luxury, Diamond, Studs', NULL, 2.00, 'One Size', 'Silver', 1),
+(3020, 1, 'Earrings', 'Cubic Zirconia Studs', 'Affordable sparkle suitable for daily wear.', 'Sterling Silver with CZ', 25.00, 150, 0, '/images/items/cz_studs.jpg', NULL, 'Basic, Sparkle, Silver', NULL, 1.50, 'One Size', 'Clear', 1),
+(3021, 9, 'Bracelets', 'Build-Your-Own Charm Bracelet', 'Base chain link bracelet ready for your charm collection.', 'Sterling Silver', 50.00, 200, 0, '/images/items/charm_base.jpg', NULL, 'Charms, DIY, Silver', NULL, 9.00, 'Adjustable', 'Silver', 1),
+(3022, 6, 'Earrings', 'Blue Topaz Studs', 'Bright blue topaz gems in a simple 4-prong setting.', 'Sterling Silver', 45.00, 30, 0, '/images/products/var_1766316071_0.png', '[\"\\/images\\/products\\/base_1766316071_0.png\",\"\\/images\\/products\\/base_1766316071_1.png\",\"\\/images\\/products\\/base_1766316071_2.png\"]', 'Color, Topaz, Blue', 73680, 2.10, 'One Size', 'Blue', 1),
+(3023, 10, 'Necklaces', 'Birthstone Pendant Necklace', 'Personalized birthstone gem on a dainty chain.', 'Gold Plated', 55.00, 60, 0, '/images/products/var_1766315638_0.png', '[\"\\/images\\/products\\/base_1766315638_0.png\",\"\\/images\\/products\\/base_1766315638_1.png\",\"\\/images\\/products\\/base_1766315638_2.png\"]', 'Gift, Personalized, Gold', 69390, 3.00, '45cm', 'Multi', 1),
+(3024, 9, 'Bracelets', 'Beaded Stretch Bracelet', 'Casual beaded bracelet on durable elastic cord.', 'Glass Beads', 20.00, 100, 0, '/images/products/var_1766314590_0.png', '[\"\\/images\\/products\\/base_1766314590_0.png\",\"\\/images\\/products\\/base_1766314590_1.png\",\"\\/images\\/products\\/base_1766314590_2.png\"]', 'Boho, Casual, Colorful', NULL, 5.00, 'Stretch', 'Multi', 1),
+(3025, 5, 'Necklaces', 'Amethyst Crystal Choker', 'Raw amethyst crystal point on a velvet choker.', 'Sterling Silver', 35.00, 40, 0, '/images/products/var_1766313385_0.png', '[\"\\/images\\/products\\/base_1766313117_0.png\",\"\\/images\\/products\\/base_1766313117_1.png\",\"\\/images\\/products\\/base_1766313117_2.png\"]', 'Women, Classic, Boho, Waterproof, Hypoallergenic, Tarnish-Free, Adjustable, Crystal, Choker', 11304, 4.00, '12 inch', 'Purple', 1),
+(3034, 5, 'Necklaces', 'Amethyst Crystal Choker', 'Raw amethyst crystal point on a velvet choker.', '18k Gold Plated', 35.00, 40, 0, '/images/products/var_1766313753_1.png', '[\"\\/images\\/products\\/base_1766313117_0.png\",\"\\/images\\/products\\/base_1766313117_1.png\",\"\\/images\\/products\\/base_1766313117_2.png\"]', 'Women, Classic, Boho, Waterproof, Hypoallergenic, Tarnish-Free, Adjustable, Crystal, Choker', 11304, NULL, NULL, NULL, 1),
+(3036, 10, 'Necklaces', 'Birthstone Pendant Necklace', 'Personalized birthstone gem on a dainty chain.', 'Sterling Silver', 55.00, 60, 0, '/images/products/var_1766315638_1.png', '[\"\\/images\\/products\\/base_1766315638_0.png\",\"\\/images\\/products\\/base_1766315638_1.png\",\"\\/images\\/products\\/base_1766315638_2.png\"]', 'Gift, Personalized, Gold', 69390, NULL, NULL, NULL, 1),
+(3037, 6, 'Earrings', 'Blue Topaz Studs', 'Bright blue topaz gems in a simple 4-prong setting.', '18k Gold Plated', 45.00, 30, 0, '/images/products/var_1766316071_1.png', '[\"\\/images\\/products\\/base_1766316071_0.png\",\"\\/images\\/products\\/base_1766316071_1.png\",\"\\/images\\/products\\/base_1766316071_2.png\"]', 'Color, Topaz, Blue', 73680, NULL, NULL, NULL, 1);
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 
 -- --------------------------------------------------------
 
@@ -333,6 +368,10 @@ INSERT INTO `item_gallery` (`GALLERY_ID`, `ITEM_ID`, `IMAGE_URL`, `IMAGE_TYPE`) 
 (21, 3021, '/images/items/charm_base_main.jpg', 'main'),
 (22, 3022, '/images/items/topaz_studs_main.jpg', 'main'),
 (23, 3023, '/images/items/birthstone_main.jpg', 'main'),
+<<<<<<< HEAD
+=======
+(24, 3024, '/images/items/beaded_stretch_main.jpg', 'main'),
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 (25, 3025, '/images/items/amethyst_choker_main.jpg', 'main'),
 (32, 3001, '/images/items/ruby_ring_hover.jpg', 'hover'),
 (33, 3002, '/images/items/turquoise_ring_hover.jpg', 'hover'),
@@ -357,6 +396,10 @@ INSERT INTO `item_gallery` (`GALLERY_ID`, `ITEM_ID`, `IMAGE_URL`, `IMAGE_TYPE`) 
 (52, 3021, '/images/items/charm_base_hover.jpg', 'hover'),
 (53, 3022, '/images/items/topaz_studs_hover.jpg', 'hover'),
 (54, 3023, '/images/items/birthstone_hover.jpg', 'hover'),
+<<<<<<< HEAD
+=======
+(55, 3024, '/images/items/beaded_stretch_hover.jpg', 'hover'),
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 (56, 3025, '/images/items/amethyst_choker_hover.jpg', 'hover');
 
 -- --------------------------------------------------------
@@ -576,7 +619,11 @@ ALTER TABLE `designer`
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
+<<<<<<< HEAD
   MODIFY `ITEM_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3062;
+=======
+  MODIFY `ITEM_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3038;
+>>>>>>> f3beae1f17acec66bd7be67a37c46baa6141b597
 
 --
 -- AUTO_INCREMENT for table `item_gallery`
