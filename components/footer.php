@@ -1,12 +1,12 @@
-<footer class="site-footer">
+<<footer class="site-footer">
     <div class="footer-content">
 
         <div class="footer-col">
             <h4>Info</h4>
             <ul>
-                <li><a href="#">Terms & Conditions</a></li>
-                <li><a href="#">Privacy & Policy</a></li>
-                <li><a href="#">FAQ</a></li>
+                <li><a href="terms.php">Terms & Conditions</a></li>
+                <li><a href="privacy.php" target="_blank" rel="noopener noreferrer">Privacy & Policy</a></li>
+                <li><a href="faq.php" target="_blank" rel="noopener noreferrer">FAQ</a></li>
             </ul>
         </div>
 
