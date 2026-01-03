@@ -29,8 +29,7 @@ $stmt = $pdo->prepare("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Fetch Orders (Carts that are NOT 'active')
-// Added TRACKING_ID to the select just to be explicit, though * selects all
+// Fetch Orders
 $order_sql = "SELECT * FROM CART WHERE CUSTOMER_ID = ? AND CART_STATUS != 'active' ORDER BY CART_ID DESC";
 $stmt = $pdo->prepare($order_sql);
 $stmt->execute([$user_id]);
@@ -44,7 +43,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <title>My Account | TINK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&family=Courier+Prime:wght@400;700&display=swap"
         rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="assets/css/style.css">
@@ -52,7 +52,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-    /* Add specific styles for tracking info */
+    /* Tracking Info Styles */
     .tracking-info {
         margin-top: 15px;
         padding-top: 15px;
@@ -103,6 +103,26 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         letter-spacing: 0.05em;
     }
     </style>
+
+    <script>
+    function toggleProfileForm() {
+        var display = document.getElementById('profileDisplay');
+        var form = document.getElementById('profileForm');
+
+        if (!display || !form) {
+            console.error("Profile elements not found!");
+            return;
+        }
+
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+            display.style.display = 'none';
+        } else {
+            form.style.display = 'none';
+            display.style.display = 'block';
+        }
+    }
+    </script>
 </head>
 
 <body>
@@ -120,29 +140,51 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="info-box">
                     <div class="box-header">
                         <h3><i class='bx bxs-user-detail'></i> Personal Details</h3>
-                        <button class="btn-edit" onclick="toggleProfileForm()">Edit</button>
+                        <button type="button" class="btn-edit" onclick="toggleProfileForm()">Edit</button>
                     </div>
+
                     <div id="profileDisplay">
-                        <div class="detail-row"><span class="label">Name</span><span
-                                class="value"><?= htmlspecialchars($user['CUSTOMER_NAME']) ?></span></div>
-                        <div class="detail-row"><span class="label">Email</span><span
-                                class="value"><?= htmlspecialchars($user['CUSTOMER_EMAIL']) ?></span></div>
-                        <div class="detail-row"><span class="label">Phone</span><span
-                                class="value"><?= htmlspecialchars($user['CUSTOMER_TEL']) ?></span></div>
-                        <div class="detail-row"><span class="label">Address</span><span
-                                class="value address-text"><?= !empty($user['CUSTOMER_ADDRESS']) ? nl2br(htmlspecialchars($user['CUSTOMER_ADDRESS'])) : '<em>No address set</em>' ?></span>
+                        <div class="detail-row">
+                            <span class="label">Name</span>
+                            <span class="value"><?= htmlspecialchars($user['CUSTOMER_NAME']) ?></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Email</span>
+                            <span class="value"><?= htmlspecialchars($user['CUSTOMER_EMAIL']) ?></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Phone</span>
+                            <span class="value"><?= htmlspecialchars($user['CUSTOMER_TEL']) ?></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Address</span>
+                            <span class="value address-text">
+                                <?= !empty($user['CUSTOMER_ADDRESS']) ? nl2br(htmlspecialchars($user['CUSTOMER_ADDRESS'])) : '<em>No address set</em>' ?>
+                            </span>
                         </div>
                     </div>
+
                     <form action="account.php" method="POST" id="profileForm" class="edit-form" style="display:none;">
                         <input type="hidden" name="action" value="update_profile">
-                        <div class="form-group"><label>Full Name</label><input type="text" name="name"
-                                value="<?= htmlspecialchars($user['CUSTOMER_NAME']) ?>" required></div>
-                        <div class="form-group"><label>Phone Number</label><input type="text" name="phone"
-                                value="<?= htmlspecialchars($user['CUSTOMER_TEL']) ?>" required></div>
-                        <div class="form-group"><label>Shipping Address</label><textarea name="address" rows="4"
-                                required><?= htmlspecialchars($user['CUSTOMER_ADDRESS']) ?></textarea></div>
-                        <div class="form-actions"><button type="submit" class="btn-save">Save Changes</button><button
-                                type="button" class="btn-cancel" onclick="toggleProfileForm()">Cancel</button></div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" name="name" value="<?= htmlspecialchars($user['CUSTOMER_NAME']) ?>"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" name="phone" value="<?= htmlspecialchars($user['CUSTOMER_TEL']) ?>"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Shipping Address</label>
+                            <textarea name="address"
+                                rows="4"><?= htmlspecialchars($user['CUSTOMER_ADDRESS'] ?? '') ?></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save">Save Changes</button>
+                            <button type="button" class="btn-cancel" onclick="toggleProfileForm()">Cancel</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -161,9 +203,9 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             // Fetch Items
                             $cart_id = $order['CART_ID'];
                             $item_sql = "SELECT ci.*, i.ITEM_NAME, i.ITEM_IMAGE 
-                                     FROM CARTITEM ci 
-                                     JOIN ITEM i ON ci.ITEM_ID = i.ITEM_ID 
-                                     WHERE ci.CART_ID = ?";
+                                         FROM CARTITEM ci 
+                                         JOIN ITEM i ON ci.ITEM_ID = i.ITEM_ID 
+                                         WHERE ci.CART_ID = ?";
                             $i_stmt = $pdo->prepare($item_sql);
                             $i_stmt->execute([$cart_id]);
                             $items = $i_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -176,7 +218,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             $shipping = ($order_total > 200) ? 0 : 15;
                             $final_total = $order_total + $shipping;
 
-                            // Status Logic for CSS class
+                            // Status Logic
                             $statusClass = 'status-' . strtolower($order['CART_STATUS']);
                         ?>
 
@@ -209,7 +251,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <i class='bx bxs-truck' style="font-size: 1.2rem; color: #3b82f6;"></i>
                             <span>Tracking ID: <span
                                     class="tracking-number"><?= htmlspecialchars($order['TRACKING_ID']) ?></span></span>
-
                             <a href="#"
                                 style="margin-left: auto; font-size: 0.8rem; color: #3b82f6; text-decoration: underline;">Track
                                 Parcel</a>
@@ -231,19 +272,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <?php include 'components/footer.php'; ?>
 
-    <script>
-    function toggleProfileForm() {
-        var display = document.getElementById('profileDisplay');
-        var form = document.getElementById('profileForm');
-        if (form.style.display === 'none') {
-            form.style.display = 'block';
-            display.style.display = 'none';
-        } else {
-            form.style.display = 'none';
-            display.style.display = 'block';
-        }
-    }
-    </script>
 </body>
 
 </html>

@@ -116,6 +116,14 @@
 	cursor: pointer;
 	font-family: "Lato", sans-serif;
 	color: #666;
+	font-size: 0.9rem;
+	padding: 5px 10px;
+	transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+	color: #1a1a1a;
+	font-weight: 600;
 }
 
 /* Detail Rows */
