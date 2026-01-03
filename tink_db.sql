@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 03, 2026 at 11:29 AM
+-- Generation Time: Jan 03, 2026 at 11:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -458,7 +458,8 @@ CREATE TABLE `review` (
 INSERT INTO `review` (`REVIEW_ID`, `CUSTOMER_ID`, `ITEM_ID`, `REVIEW_DATE`, `REVIEW_RATING`, `REVIEW_TEXT`, `REVIEW_ACTIVE`) VALUES
 (1, 1002, 3021, '2025-02-05 14:00:00', 5, 'Love that I can add my own charms!', 1),
 (2, 1001, 3001, '2025-01-20 09:30:00', 4, 'The ruby is darker than expected but very beautiful.', 1),
-(3, 1003, 3012, '2025-01-25 11:15:00', 5, 'Simple and perfect fit.', 1);
+(3, 1003, 3012, '2025-01-25 11:15:00', 5, 'Simple and perfect fit.', 1),
+(4, 1006, 3036, '2026-01-03 18:30:19', 5, 'its so pretty!', 1);
 
 --
 -- Indexes for dumped tables
@@ -632,7 +633,7 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `review`
 --
 ALTER TABLE `review`
-  MODIFY `REVIEW_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `REVIEW_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
